@@ -10,9 +10,10 @@ import java.net.URL;
 
 import apple.Main;
 
-abstract class Downloader {
+abstract class Downloader implements Runnable{
 	String baseURL;
 	String baseAbsPath;
+	String path;
 
 	public Downloader() {
 		this.baseURL = Main.getBaseURL();
@@ -20,6 +21,10 @@ abstract class Downloader {
 	}
 
 	abstract protected void download(String path);
+
+	public void run(){
+		this.download(this.path);
+	}
 
 	String downloadStatic(String path) {
 		try {

@@ -11,14 +11,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MediaDownloader extends Downloader {
-	private static MediaDownloader mediaDownloader = new MediaDownloader();
+//	private static MediaDownloader mediaDownloader = new MediaDownloader();
 
-	private MediaDownloader() {
+	public MediaDownloader(String mediaPath) {
+		this.path = mediaPath;
 	}
 
-	public static MediaDownloader getInstance() {
-		return mediaDownloader;
-	}
+//	public static MediaDownloader getInstance() {
+//		return mediaDownloader;
+//	}
 
 	@Override
 	//download image, mp4, svg etc....

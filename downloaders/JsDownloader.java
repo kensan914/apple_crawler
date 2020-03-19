@@ -1,14 +1,15 @@
 package apple.downloaders;
 
 public class JsDownloader extends Downloader {
-	private static JsDownloader jsDownloader = new JsDownloader();
+//	private static JsDownloader jsDownloader = new JsDownloader();
 
-	private JsDownloader() {
+	public JsDownloader(String jsPath) {
+		this.path = jsPath;
 	}
 
-	public static JsDownloader getInstance() {
-		return jsDownloader;
-	}
+//	public static JsDownloader getInstance() {
+//		return jsDownloader;
+//	}
 
 	@Override
 	public void download(String jsPath) {

@@ -11,6 +11,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import apple.Main;
 import apple.downloaders.JsDownloader;
 import apple.downloaders.MediaDownloader;
 
@@ -29,7 +30,7 @@ public class HtmlParser extends Parser {
 	public void parse(String htmlPath, int hierarchy) {
 		try {
 			String hostName = this.extractHostName(htmlPath);
-			System.out.println("host name is : " + hostName);
+//			System.out.println("host name is : " + hostName);
 			Document doc = Jsoup.connect(baseURL + htmlPath).get();
 			doc = this.parseLink(doc, hierarchy, hostName);
 			doc = this.parseScript(doc, hostName);
@@ -74,8 +75,11 @@ public class HtmlParser extends Parser {
 			for(Element scriptElm : scriptElms) {
 				if(scriptElm.hasAttr("src")) {
 					String jsPath = this.convertPath(scriptElm.attr("src"), hostName);
-					JsDownloader jsDownloader = JsDownloader.getInstance();
-					jsDownloader.download(jsPath);
+
+//					JsDownloader jsDownloader = JsDownloader.getInstance();
+//					jsDownloader.download(jsPath);
+					Main.getWorkQueue().execute(new JsDownloader(jsPath));
+
 					scriptElm.attr("src", this.createLocalAbs(jsPath));
 				}
 			}
@@ -104,8 +108,11 @@ public class HtmlParser extends Parser {
 				if(imgElm.hasAttr("src")) {
 					String imgPath = this.convertPath(imgElm.attr("src"), hostName);
 					if (!imgPath.equals("")) {
-						MediaDownloader mediaDownloader = MediaDownloader.getInstance();
-						mediaDownloader.download(imgPath);
+
+//						MediaDownloader mediaDownloader = MediaDownloader.getInstance();
+//						mediaDownloader.download(imgPath);
+						Main.getWorkQueue().execute(new MediaDownloader(imgPath));
+
 						Pattern pattern = Pattern.compile("(.+)\\?.+");
 						Matcher matcher = pattern.matcher(imgPath);
 						if(matcher.find()) {
@@ -117,8 +124,11 @@ public class HtmlParser extends Parser {
 				if (imgElm.hasAttr("data-viewport-src")) {
 					String imgPath = this.convertPath(imgElm.attr("data-viewport-src"), hostName);
 					if (!imgPath.equals("")) {
-						MediaDownloader mediaDownloader = MediaDownloader.getInstance();
-						mediaDownloader.download(imgPath);
+
+//						MediaDownloader mediaDownloader = MediaDownloader.getInstance();
+//						mediaDownloader.download(imgPath);
+						Main.getWorkQueue().execute(new MediaDownloader(imgPath));
+
 						Pattern pattern = Pattern.compile("(.+)\\?.+");
 						Matcher matcher = pattern.matcher(imgPath);
 						if(matcher.find()) {
@@ -142,16 +152,22 @@ public class HtmlParser extends Parser {
 				for (String videoAttr : videoAttrs) {
 					if(videoElm.hasAttr(videoAttr)) {
 						String videoPath = this.convertPath(videoElm.attr(videoAttr), hostName);
-						MediaDownloader mediaDownloader = MediaDownloader.getInstance();
-						mediaDownloader.download(videoPath);
+
+//						MediaDownloader mediaDownloader = MediaDownloader.getInstance();
+//						mediaDownloader.download(videoPath);
+						Main.getWorkQueue().execute(new MediaDownloader(videoPath));
+
 						videoElm.attr(videoAttr, this.createLocalAbs(videoPath));
 					}
 				}
 
 				if(videoElm.hasAttr("data-video-source-basepath")) {
 					String videoBasePath = this.convertPath(videoElm.attr("data-video-source-basepath"), hostName);
-					MediaDownloader mediaDownloader = MediaDownloader.getInstance();
-					mediaDownloader.download(videoBasePath + "small.mp4");
+
+//					MediaDownloader mediaDownloader = MediaDownloader.getInstance();
+//					mediaDownloader.download(videoBasePath + "small.mp4");
+					Main.getWorkQueue().execute(new MediaDownloader(videoBasePath + "small.mp4"));
+
 					videoElm.attr("data-video-source-basepath", this.createLocalAbs(videoBasePath));
 				}
 			}

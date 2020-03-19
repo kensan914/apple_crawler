@@ -3,6 +3,7 @@ package apple.parsers;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import apple.Main;
 import apple.downloaders.CssDownloader;
 import apple.downloaders.MediaDownloader;
 
@@ -18,8 +19,9 @@ public class CssParser extends Parser {
 
 	@Override
 	public void parse(String cssPath, int hierarchy) {
-		CssDownloader cssDownloader = CssDownloader.getInstance();
-		cssDownloader.download(cssPath);
+//		CssDownloader cssDownloader = CssDownloader.getInstance();
+//		cssDownloader.download(cssPath);
+		Main.getWorkQueue().execute(new CssDownloader(cssPath));
 	}
 
 	public String parseUrl(String cssText, String staticPath) {
@@ -30,17 +32,19 @@ public class CssParser extends Parser {
 			Pattern relPattern = Pattern.compile("(url\\(\\\")\\.\\.(/.+?)(\\\"\\))");
 			Pattern absPatternNonD = Pattern.compile("(url\\()(/.+?)(\\))");
 			Pattern relPatternNonD = Pattern.compile("(url\\()\\.\\.(/.+?)(\\))");
-			MediaDownloader mediaDownloader = MediaDownloader.getInstance();
+//			MediaDownloader mediaDownloader = MediaDownloader.getInstance();
 
 			Matcher absMatcher = absPattern.matcher(cssText);
 			Matcher absMatcherNonD = absPatternNonD.matcher(cssText);
 			while (absMatcher.find()) {
 				String imgPath = convertPath(absMatcher.group(2), hostName);
-				mediaDownloader.download(imgPath);
+//				mediaDownloader.download(imgPath);
+				Main.getWorkQueue().execute(new MediaDownloader(imgPath));
 			}
 			while (absMatcherNonD.find()) {
 				String imgPath = convertPath(absMatcherNonD.group(2), hostName);
-				mediaDownloader.download(imgPath);
+//				mediaDownloader.download(imgPath);
+				Main.getWorkQueue().execute(new MediaDownloader(imgPath));
 			}
 
 			String parentPath = this.pwdParent(staticPath);
@@ -48,10 +52,12 @@ public class CssParser extends Parser {
 			Matcher relMatcherNonD = relPatternNonD.matcher(cssText);
 
 			while (relMatcher.find()) {
-				mediaDownloader.download(parentPath + relMatcher.group(2));
+//				mediaDownloader.download(parentPath + relMatcher.group(2));
+				Main.getWorkQueue().execute(new MediaDownloader(parentPath + relMatcher.group(2)));
 			}
 			while (relMatcherNonD.find()) {
-				mediaDownloader.download(parentPath + relMatcherNonD.group(2));
+//				mediaDownloader.download(parentPath + relMatcherNonD.group(2));
+				Main.getWorkQueue().execute(new MediaDownloader(parentPath + relMatcherNonD.group(2)));
 			}
 
 			absMatcher = absPattern.matcher(cssText);
